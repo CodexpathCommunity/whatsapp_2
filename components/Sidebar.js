@@ -4,20 +4,43 @@ import { AiFillWechat } from "react-icons/ai";
 import { MdMoreVert } from "react-icons/md";
 import { FiSearch } from "react-icons/fi";
 import * as EmailValidator from "email-validator";
+import { auth, db } from "../firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useCollection } from "react-firebase-hooks/firestore";
+import Chat from "./Chat";
 
 function Sidebar() {
+  const [user] = useAuthState(auth);
+  const userChatRef = db
+    .collection("chat")
+    .where("users", "array-contains", user.email);
+  const [chatsSnapshot] = useCollection(userChatRef);
+
   const createChat = () => {
     const input = prompt("please enter an email for the user you chat with");
     if (!input) return null;
-    if (EmailValidator.validate(input)) {
-      // we need to add this chat to a db.
+    if (
+      EmailValidator.validate(input) &&
+      !chatAlreadyExists(input) &&
+      input !== user.email
+    ) {
+      //emailvalidation will hapen here
+      db.collection("chat").add({
+        users: [user.email, input],
+      });
     }
   };
+
+  const chatAlreadyExists = (recipientEmail) =>
+    !!chatsSnapshot?.docs.find(
+      (chat) =>
+        chat.data().users.find((user) => user === recipientEmail)?.length > 0
+    );
 
   return (
     <Container>
       <Header>
-        <UserAvatar />
+        <UserAvatar onClick={() => auth.signOut()} />
         <IconsContainer>
           <IconButton>
             <ChatIcon />
@@ -34,6 +57,10 @@ function Sidebar() {
       </Search>
 
       <SidebarButton onClick={createChat}>Start a new Chat</SidebarButton>
+
+      {chatsSnapshot?.docs.map((chat) => (
+        <Chat key={chat.id} id={chat.id} user={chat.data().users} />
+      ))}
     </Container>
   );
 }
@@ -68,7 +95,8 @@ const ChatIcon = styled(AiFillWechat)`
   font-size: 40px !important;
 `;
 const SearchIcon = styled(FiSearch)`
-  font-size: 25px !important;
+  font-size: 20px !important;
+  margin-right: 15px;
 `;
 const Search = styled.div`
   display: flex;
