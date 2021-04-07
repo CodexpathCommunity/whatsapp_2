@@ -4,7 +4,7 @@ import Sidebar from "../../components/Sidebar";
 import ChatScreen from "../../components/ChatScreen";
 import { db } from "../../firebase";
 
-function Chat({chat, messages}) {
+function Chat({ chat, messages }) {
   return (
     <Container>
       <Head>
@@ -23,7 +23,7 @@ function Chat({chat, messages}) {
 export default Chat;
 
 export async function getServerSideProps(context) {
-  const ref = db.collection("chats").doc(context.query.id);
+  const ref = db.collection("chat").doc(context.query.id);
 
   const messagesRes = await ref
     .collection("messages")
@@ -41,11 +41,14 @@ export async function getServerSideProps(context) {
     }));
 
   const chatRes = await ref.get();
+  console.log(chatRes.data());
 
   const chat = {
     id: chatRes.id,
     ...chatRes.data(),
   };
+
+  console.log(chat, messages);
 
   return {
     props: {
