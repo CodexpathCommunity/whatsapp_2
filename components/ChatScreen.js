@@ -10,8 +10,11 @@ import { GrEmoji } from "react-icons/gr";
 import { BsMicFill } from "react-icons/bs";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Message from "./Message";
+import { useState } from "react";
+import firebase from "firebase";
 
 function ChatScreen({ chat, messages }) {
+  const [input, setInput] = useState("");
   const [user] = useAuthState(auth);
   const router = useRouter();
   const [messagesSnapshot] = useCollection(
@@ -35,6 +38,25 @@ function ChatScreen({ chat, messages }) {
         />
       ));
     }
+  };
+
+  const sendMessage = (e) => {
+    e.preventDefault();
+
+    db.collection("users").doc(user.uid).set(
+      {
+        lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+    db.collection("chat").doc(router.query.id).collection("messages").add({
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      message: input,
+      user: user.email,
+      photoURL: user.photoURL,
+    });
+
+    setInput("");
   };
 
   return (
@@ -61,7 +83,10 @@ function ChatScreen({ chat, messages }) {
 
       <InputContainer>
         <SmileIcon />
-        <Input />
+        <Input value={input} onChange={(e) => setInput(e.target.value)} />
+        <button hidden disabled={!input} type="submit" onClick={sendMessage}>
+          Send message
+        </button>
         <MicIcon />
       </InputContainer>
     </Container>
@@ -99,7 +124,11 @@ const HeaderInformation = styled.div`
 `;
 const EndOfMessage = styled.div``;
 
-const MessageContainer = styled.div``;
+const MessageContainer = styled.div`
+  padding: 30px;
+  background-color: #e5ded8;
+  min-height: 90vh;
+`;
 
 const HeaderIcons = styled.div``;
 
