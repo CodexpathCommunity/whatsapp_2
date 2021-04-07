@@ -16,11 +16,17 @@ function Chat({ id, users }) {
   );
   const recipient = recipientSnapshot?.docs?.[0]?.data();
 
-  const enterChat = router.push(`/chat/${id}`);
+  const enterChat = () => {
+    router.push(`/chat/${id}`);
+  };
 
   return (
     <Container onClick={enterChat}>
-      {recipient ? <UserAvatar src={recipient.photoURL} /> : <UserAvatar />}
+      {recipient ? (
+        <UserAvatar src={recipient.photoURL} />
+      ) : (
+        <UserAvatar>{recipientEmail[0]}</UserAvatar>
+      )}
 
       <p>{recipientEmail} </p>
     </Container>
