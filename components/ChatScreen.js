@@ -11,6 +11,7 @@ import { useCollection } from "react-firebase-hooks/firestore";
 function ChatScreen({ chat, messages }) {
   const [user] = useAuthState(auth);
   const router = useRouter();
+  const [messagesSnapshot] = useCollection(
     db
       .collection("chats")
       .doc(router.query.id)
