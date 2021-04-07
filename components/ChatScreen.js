@@ -2,11 +2,14 @@ import { Avatar, IconButton } from "@material-ui/core";
 import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import styled from "styled-components";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import getRecipientEmail from "../utils/getRecipientEmail";
 import { MdMoreVert } from "react-icons/md";
 import { MdAttachFile } from "react-icons/md";
+import { GrEmoji } from "react-icons/gr";
+import { BsMicFill } from "react-icons/bs";
 import { useCollection } from "react-firebase-hooks/firestore";
+import Message from "./Message";
 
 function ChatScreen({ chat, messages }) {
   const [user] = useAuthState(auth);
@@ -21,7 +24,7 @@ function ChatScreen({ chat, messages }) {
 
   const showMessages = () => {
     if (messagesSnapshot) {
-      return messagesSnapshot.docs.map((messages) => (
+      return messagesSnapshot.docs.map((message) => (
         <Message
           key={message.id}
           user={message.data().user}
@@ -52,8 +55,15 @@ function ChatScreen({ chat, messages }) {
         </HeaderIcons>
       </Header>
       <MessageContainer>
-        <EndofMessage />
+        {showMessages()}
+        <EndOfMessage />
       </MessageContainer>
+
+      <InputContainer>
+        <SmileIcon />
+        <Input />
+        <MicIcon />
+      </InputContainer>
     </Container>
   );
 }
@@ -89,6 +99,8 @@ const HeaderInformation = styled.div`
 `;
 const EndOfMessage = styled.div``;
 
+const MessageContainer = styled.div``;
+
 const HeaderIcons = styled.div``;
 
 const MoreIcon = styled(MdMoreVert)`
@@ -96,4 +108,28 @@ const MoreIcon = styled(MdMoreVert)`
 `;
 const AttachIcon = styled(MdAttachFile)`
   font-size: 25px !important;
+`;
+const SmileIcon = styled(GrEmoji)`
+  font-size: 25px !important;
+`;
+const MicIcon = styled(BsMicFill)`
+  font-size: 25px !important;
+`;
+const InputContainer = styled.form`
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  position: sticky;
+  bottom: 0;
+  background-color: white;
+  z-index: 100;
+`;
+const Input = styled.input`
+  flex: 1;
+  outline: 0;
+  border: none;
+  border-radius: 10px;
+  background-color: whitesmoke;
+  padding: 20px;
+  margin: 0 15px;
 `;
