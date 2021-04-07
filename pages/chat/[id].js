@@ -2,7 +2,9 @@ import styled from "styled-components";
 import Head from "next/head";
 import Sidebar from "../../components/Sidebar";
 import ChatScreen from "../../components/ChatScreen";
-import { db } from "../../firebase";
+import { auth, db } from "../../firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import getRecipientEmail from "../../utils/getRecipientEmail";
 
 function Chat({ chat, messages }) {
   const [user] = useAuthState(auth);
