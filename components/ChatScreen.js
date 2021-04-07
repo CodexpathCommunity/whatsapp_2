@@ -6,10 +6,33 @@ import { auth } from "../firebase";
 import getRecipientEmail from "../utils/getRecipientEmail";
 import { MdMoreVert } from "react-icons/md";
 import { MdAttachFile } from "react-icons/md";
+import { useCollection } from "react-firebase-hooks/firestore";
 
 function ChatScreen({ chat, messages }) {
   const [user] = useAuthState(auth);
   const router = useRouter();
+    db
+      .collection("chats")
+      .doc(router.query.id)
+      .collection("messages")
+      .orderBy("timestamp", "asc")
+  );
+
+  const showMessages = () => {
+    if (messagesSnapshot) {
+      return messagesSnapshot.docs.map((messages) => (
+        <Message
+          key={message.id}
+          user={message.data().user}
+          message={{
+            ...message.data(),
+            timestamp: message.data().timestamp?.toDate().getTime(),
+          }}
+        />
+      ));
+    }
+  };
+
   return (
     <Container>
       <Header>
@@ -27,6 +50,9 @@ function ChatScreen({ chat, messages }) {
           </IconButton>
         </HeaderIcons>
       </Header>
+      <MessageContainer>
+        <EndofMessage />
+      </MessageContainer>
     </Container>
   );
 }
@@ -35,9 +61,32 @@ export default ChatScreen;
 
 const Container = styled.div``;
 
-const Header = styled.div``;
+const Header = styled.div`
+  position: sticky;
+  background-color: white;
+  z-index: 100;
+  top: 0;
+  display: flex;
+  padding: 13px;
+  box-sizing: border-box;
+  height: 80px;
+  align-items: center;
+  border-bottom: 1px solid whitesmoke;
+`;
 
-const HeaderInformation = styled.div``;
+const HeaderInformation = styled.div`
+  margin-left: 15px;
+  flex: 1;
+
+  > h3 {
+    margin-bottom: 3px;
+  }
+  > p {
+    font-size: 14px;
+    color: gray;
+  }
+`;
+const EndOfMessage = styled.div``;
 
 const HeaderIcons = styled.div``;
 
