@@ -19,7 +19,7 @@ function ChatScreen({ chat, messages }) {
   const router = useRouter();
   const [messagesSnapshot] = useCollection(
     db
-      .collection("chats")
+      .collection("chat")
       .doc(router.query.id)
       .collection("messages")
       .orderBy("timestamp", "asc")
@@ -37,7 +37,10 @@ function ChatScreen({ chat, messages }) {
           }}
         />
       ));
-    }
+    } else
+      JSON.parse(messages).map((message) => (
+        <Message key={message.id} user={message.user} message={message} />
+      ));
   };
 
   const sendMessage = (e) => {
