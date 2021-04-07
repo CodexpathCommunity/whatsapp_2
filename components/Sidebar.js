@@ -89,10 +89,10 @@ const UserAvatar = styled(Avatar)`
 `;
 const IconsContainer = styled.div``;
 const MoreIcon = styled(MdMoreVert)`
-  font-size: 40px !important;
+  font-size: 30px !important;
 `;
 const ChatIcon = styled(AiFillWechat)`
-  font-size: 40px !important;
+  font-size: 30px !important;
 `;
 const SearchIcon = styled(FiSearch)`
   font-size: 20px !important;
