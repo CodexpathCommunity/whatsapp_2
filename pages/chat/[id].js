@@ -2,8 +2,9 @@ import styled from "styled-components";
 import Head from "next/head";
 import Sidebar from "../../components/Sidebar";
 import ChatScreen from "../../components/ChatScreen";
+import { db } from "../../firebase";
 
-function Chat() {
+function Chat({chat, messages}) {
   return (
     <Container>
       <Head>
@@ -26,7 +27,7 @@ export async function getServerSideProps(context) {
 
   const messagesRes = await ref
     .collection("messages")
-    .order("timestamp", "asc")
+    .orderBy("timestamp", "asc")
     .get();
 
   const messages = messagesRes.docs
