@@ -5,10 +5,11 @@ import ChatScreen from "../../components/ChatScreen";
 import { db } from "../../firebase";
 
 function Chat({ chat, messages }) {
+  const [user] = useAuthState(auth);
   return (
     <Container>
       <Head>
-        <title>chat </title>
+        <title>chat with {getRecipientEmail(chat.users, user)} </title>
       </Head>
 
       <Sidebar />
