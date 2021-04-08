@@ -10,7 +10,7 @@ import { GrEmoji } from "react-icons/gr";
 import { BsMicFill } from "react-icons/bs";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Message from "./Message";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import firebase from "firebase";
 import TimeAgo from "timeago-react";
 
@@ -19,12 +19,16 @@ function ChatScreen({ chat, messages }) {
   const [user] = useAuthState(auth);
   const router = useRouter();
 
+  const endOfMessagesRef = useRef(null);
+
   //to get the user photo url
   const recipientEmail = getRecipientEmail(chat.users, user);
   const [recipientSnapshot] = useCollection(
     db.collection("users").where("email", "==", recipientEmail)
   );
   const recipient = recipientSnapshot?.docs?.[0]?.data();
+
+  //gets the messages collection
 
   const [messagesSnapshot] = useCollection(
     db
@@ -51,6 +55,12 @@ function ChatScreen({ chat, messages }) {
         <Message key={message.id} user={message.user} message={message} />
       ));
   };
+  const scrollToButtom = () => {
+    endOfMessagesRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
   const sendMessage = (e) => {
     e.preventDefault();
@@ -69,6 +79,7 @@ function ChatScreen({ chat, messages }) {
     });
 
     setInput("");
+    scrollToButtom();
   };
 
   return (
@@ -105,7 +116,7 @@ function ChatScreen({ chat, messages }) {
       </Header>
       <MessageContainer>
         {showMessages()}
-        <EndOfMessage />
+        <EndOfMessage ref={endOfMessagesRef} />
       </MessageContainer>
 
       <InputContainer>
@@ -149,7 +160,9 @@ const HeaderInformation = styled.div`
     color: gray;
   }
 `;
-const EndOfMessage = styled.div``;
+const EndOfMessage = styled.div`
+  margin-bottom: 50px;
+`;
 
 const MessageContainer = styled.div`
   padding: 30px;
